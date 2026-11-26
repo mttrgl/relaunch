@@ -13,13 +13,12 @@ FetchContent_Declare(spdlog
 )
 
 
-set(SPDLOG_BUILD_EXAMPLE OFF CACHE BOOL "Build example" FORCE)
-set(SPDLOG_BUILD_TESTS OFF CACHE BOOL "Build tests" FORCE)
-set(SPDLOG_BUILD_BENCH OFF CACHE BOOL "Build benchmarks" FORCE)
-set(SPDLOG_HEADER_ONLY ON CACHE BOOL "Build header-only" FORCE)
-set(SPDLOG_COMPILED_LIB OFF CACHE BOOL "Build compiled library" FORCE)
-
-FetchContent_MakeAvailable(spdlog)
+# 必须在 FetchContent_MakeAvailable 之前设置，否则 spdlog 自己的 CMakeLists 已执行完
+set(SPDLOG_HEADER_ONLY ON CACHE BOOL "Header-only mode, do not build static lib" FORCE)
+set(SPDLOG_DISABLE_DEFAULT_LOGGER ON CACHE BOOL "Disable default logger" FORCE)
+set(SPDLOG_BUILD_EXAMPLE OFF CACHE BOOL "Build spdlog examples" FORCE)
+set(SPDLOG_BUILD_TESTS OFF CACHE BOOL "Build spdlog tests" FORCE)
+set(SPDLOG_BUILD_BENCH OFF CACHE BOOL "Build spdlog benchmarks" FORCE)
 
 FetchContent_MakeAvailable(spdlog)
 
@@ -30,4 +29,3 @@ file(GLOB DEMO_SOURCES CONFIGURE_DEPENDS
 
 add_executable(demo ${DEMO_SOURCES})
 target_link_libraries(demo PRIVATE spdlog::spdlog_header_only)
-

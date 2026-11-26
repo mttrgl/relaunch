@@ -1,4 +1,5 @@
 #include "concurrent_log.h"
+#include "common.h"
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
@@ -15,7 +16,9 @@ constexpr int ThreadLoopCount = 10000;
 constexpr std::string ConcurrentLoggerName = "concurrent";
 
 void ConcurrentLog::Run() {
-  auto fs = std::make_shared<spdlog::sinks::basic_file_sink_mt>("spdlog-demo.log", true);
+  auto parent_path = exe_parent_path();
+  auto log_path = parent_path / "spdlog_demo.log";
+  auto fs = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_path, true);
   auto logger = std::make_shared<spdlog::logger>(ConcurrentLoggerName, fs);
 
   logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
@@ -47,8 +50,11 @@ void ConcurrentLog::Run() {
   spdlog::info("concurrent total cost times : {}", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count());
   spdlog::info("concurrent thread spdlog closed");
   spdlog::drop(ConcurrentLoggerName);
+
+  start = std::chrono::steady_clock::now();
   logger->flush();
   logger.reset();
+  spdlog::info("concurrent thread flush cost times : {}", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count());
 
   std::println("concurrent thread max cost times for each thread:");
   for (const auto &[i, cost] : max_cost_times | std::views::enumerate) {

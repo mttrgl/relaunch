@@ -1,4 +1,5 @@
 #include "async_log.h"
+#include "common.h"
 
 #include <chrono>
 #include <print>
@@ -15,10 +16,11 @@ constexpr int ThreadLoopCount = 10000;
 constexpr std::string AsyncLoggerName = "async";
 
 void AsyncLog::Run() {
-  spdlog::init_thread_pool(65536, 2);
-
-  auto fs = std::make_shared<spdlog::sinks::basic_file_sink_mt>("async.log");
-  auto logger = std::make_shared<spdlog::async_logger>(AsyncLoggerName, fs, spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+  auto parent_path = exe_parent_path();
+  auto log_path = parent_path / "async_demo.log";
+  auto tp = std::make_shared<spdlog::details::thread_pool>(65536, 1);
+  auto fs = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_path);
+  auto logger = std::make_shared<spdlog::async_logger>(AsyncLoggerName, fs, tp, spdlog::async_overflow_policy::block);
   logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
   spdlog::register_logger(logger);
 
@@ -47,8 +49,10 @@ void AsyncLog::Run() {
   spdlog::info("async total cost times : {}", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count());
   spdlog::info("async thread spdlog closed");
   spdlog::drop(AsyncLoggerName);
+  start = std::chrono::steady_clock::now();
   logger->flush();
   logger.reset();
+  spdlog::info("async thread flush cost times : {}", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count());
 
   std::println("async thread max cost times for each thread:");
   for (const auto &[i, cost] : max_cost_times | std::views::enumerate) {
