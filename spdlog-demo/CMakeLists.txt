@@ -15,6 +15,7 @@ FetchContent_Declare(spdlog
 
 # 必须在 FetchContent_MakeAvailable 之前设置，否则 spdlog 自己的 CMakeLists 已执行完
 set(SPDLOG_HEADER_ONLY ON CACHE BOOL "Header-only mode, do not build static lib" FORCE)
+set(SPDLOG_USE_STD_FORMAT ON CACHE BOOL "Use std::format instead of fmt::format" FORCE)
 set(SPDLOG_DISABLE_DEFAULT_LOGGER ON CACHE BOOL "Disable default logger" FORCE)
 set(SPDLOG_BUILD_EXAMPLE OFF CACHE BOOL "Build spdlog examples" FORCE)
 set(SPDLOG_BUILD_TESTS OFF CACHE BOOL "Build spdlog tests" FORCE)
