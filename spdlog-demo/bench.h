@@ -29,6 +29,7 @@ static void benchmark_single_thread() {
   }
   auto end = steady_clock::now();
   logger->info("bench_st: {} us", duration_cast<microseconds>(end - start).count());
+  logger->flush();
 }
 
 static void benchmark_multi_thread() {
@@ -37,8 +38,8 @@ static void benchmark_multi_thread() {
   using std::chrono::microseconds;
   using std::chrono::steady_clock;
 
-  const int num_threads = 32;
-  const int num_logs = 100000;
+  const int num_threads = 20;
+  const int num_logs = 50000;
 
   auto log_path = make_spdlog_path("bench_mt.log");
   auto logger = spdlog::basic_logger_mt("bench_mt", log_path, true);
@@ -67,4 +68,5 @@ static void benchmark_multi_thread() {
 
   auto end = steady_clock::now();
   logger->info("bench_mt: {} us", duration_cast<microseconds>(end - start).count());
+  logger->flush();
 }

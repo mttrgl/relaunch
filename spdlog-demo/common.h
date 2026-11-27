@@ -1,6 +1,7 @@
 #pragma once
 
-#include <spdlog/spdlog.h>
+#include <spdlog/common.h>
+#include <spdlog/version.h>
 
 #include <filesystem>
 #include <print>
